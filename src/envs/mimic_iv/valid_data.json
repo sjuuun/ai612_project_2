@@ -1,0 +1,62 @@
+[
+  {
+    "task_id": "0",
+    "instruction": "Your goal is to find the gender of a patient. Specifically, you want to know the gender of the patient with ID 10027602.",
+    "gold_sql": "SELECT gender FROM patients WHERE subject_id = 10027602",
+    "gold_answer": [["f"]]
+  },
+  {
+    "task_id": "1",
+    "instruction": "Your goal is to find all the routes of administration for isosorbide dinitrate for patients in the database.",
+    "gold_sql": "SELECT DISTINCT prescriptions.route FROM prescriptions WHERE prescriptions.drug = 'isosorbide dinitrate'",
+    "gold_answer": [["po/ng"]]
+  },
+  {
+    "task_id": "2",
+    "instruction": "Your goal is to find the time when two medications were prescribed simultaneously during the most recent hospital visit for a patient. Specifically, you want to know the time when medications containing olanzapine and quetiapine were prescribed together for patient ID 10004422. If there are multiple occassions where both medications were prescribed simultaneously, you want to know the earliest time.",
+    "gold_sql": "SELECT T1.starttime FROM ( SELECT prescriptions.subject_id, prescriptions.starttime FROM prescriptions WHERE prescriptions.hadm_id IN ( SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 10004422 AND admissions.dischtime IS NOT NULL ORDER BY admissions.admittime DESC LIMIT 1 ) AND prescriptions.drug = 'olanzapine' ) AS T1 JOIN ( SELECT prescriptions.subject_id, prescriptions.starttime FROM prescriptions WHERE prescriptions.hadm_id IN ( SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 10004422 AND admissions.dischtime IS NOT NULL ORDER BY admissions.admittime DESC LIMIT 1 ) AND prescriptions.drug = 'quetiapine fumarate' ) AS T2 ON T1.subject_id = T2.subject_id WHERE datetime(T1.starttime) = datetime(T2.starttime) ORDER BY T1.starttime ASC LIMIT 1",
+    "gold_answer": [["2100-01-23 10:00:00"]]
+  },
+  {
+    "task_id": "3",
+    "instruction": "Your goal is to track the daily minimum Hb levels for the patient with ID 10003400. Specifically, you want to group the results by date to observe how the minimum Hb levels change each day.",
+    "gold_sql": "SELECT MIN(labevents.valuenum) FROM labevents WHERE labevents.hadm_id IN ( SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 10003400 ) AND labevents.itemid IN ( SELECT d_labitems.itemid FROM d_labitems WHERE d_labitems.label = 'hemoglobin' ) GROUP BY strftime('%Y-%m-%d',labevents.charttime)",
+    "gold_answer": [[11.7], [10.3], [10.4]]
+  },
+  {
+    "task_id": "4",
+    "instruction": "Your goal is to find when a specific medication was last prescribed to a patient. You are interested in patient ID 10000032 and want to know the lastest time a medication administered via inhalation was given during their last hospital visit.",
+    "gold_sql": "SELECT prescriptions.starttime FROM prescriptions WHERE prescriptions.hadm_id IN ( SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 10000032 AND admissions.dischtime IS NOT NULL ORDER BY admissions.admittime DESC LIMIT 1 ) AND prescriptions.route = 'ih' ORDER BY prescriptions.starttime DESC LIMIT 1",
+    "gold_answer": [["2100-08-26 03:00:00"]]
+  },
+  {
+    "task_id": "5",
+    "instruction": "Your goal is to find the most frequently performed microbiological tests on patients who underwent a specific procedure this year. The name of the procedure is percutaneous abdominal drainage (PAD). You want to know the top 3 microbiological tests that were conducted within the same month as that procedure. If there is more than one result with the same rank among the top three, ask to retrieve them all.",
+    "gold_sql": "SELECT T3.test_name FROM ( SELECT T2.test_name, DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) AS C1 FROM ( SELECT admissions.subject_id, procedures_icd.charttime FROM procedures_icd JOIN admissions ON procedures_icd.hadm_id = admissions.hadm_id WHERE procedures_icd.icd_code = ( SELECT d_icd_procedures.icd_code FROM d_icd_procedures WHERE d_icd_procedures.long_title = 'percutaneous abdominal drainage' ) AND datetime(procedures_icd.charttime, 'start of year') = datetime('2100-12-31 23:59:00', 'start of year', '-0 year') ) AS T1 JOIN ( SELECT admissions.subject_id, microbiologyevents.test_name, microbiologyevents.charttime FROM microbiologyevents JOIN admissions ON microbiologyevents.hadm_id = admissions.hadm_id WHERE datetime(microbiologyevents.charttime, 'start of year') = datetime('2100-12-31 23:59:00', 'start of year', '-0 year') ) AS T2 ON T1.subject_id = T2.subject_id WHERE T1.charttime < T2.charttime AND datetime(T1.charttime, 'start of month') = datetime(T2.charttime, 'start of month') GROUP BY T2.test_name ) AS T3 WHERE T3.C1 <= 3",
+    "gold_answer": [["blood culture, routine"], ["gram stain"], ["anaerobic culture"]]
+  },
+  {
+    "task_id": "6",
+    "instruction": "Your goal is to know the length of a patient's hospital stay in days. You are interested in patient ID 10016742 and knowing how days spent in the hospital from admission to discharge. If this patient has multiple hospital admission records, you want to know the lastest admission.",
+    "gold_sql": "SELECT strftime('%J',admissions.dischtime) - strftime('%J',admissions.admittime) FROM admissions WHERE admissions.subject_id = 10016742 AND admissions.dischtime IS NOT NULL ORDER BY admissions.admittime DESC LIMIT 1",
+    "gold_answer": [[3.382638888899237]]
+  },
+  {
+    "task_id": "7",
+    "instruction": "Your goal is to identify the top 3 most frequently collected specimen types from patients who received CVC placement. You want both the CVC placement procedure and specimen collection occur during the same hospital admission. If multiple specimen types are tied for the same rank within the top three ranks, retrieve all tied results.",
+    "gold_sql": "SELECT T3.spec_type_desc FROM ( SELECT T2.spec_type_desc, DENSE_RANK() OVER ( ORDER BY COUNT(*) DESC ) AS C1 FROM ( SELECT admissions.subject_id, procedures_icd.charttime, admissions.hadm_id FROM procedures_icd JOIN admissions ON procedures_icd.hadm_id = admissions.hadm_id WHERE procedures_icd.icd_code = ( SELECT d_icd_procedures.icd_code FROM d_icd_procedures WHERE d_icd_procedures.long_title = 'central venous catheter placement with guidance' ) ) AS T1 JOIN ( SELECT admissions.subject_id, microbiologyevents.spec_type_desc, microbiologyevents.charttime, admissions.hadm_id FROM microbiologyevents JOIN admissions ON microbiologyevents.hadm_id = admissions.hadm_id ) AS T2 ON T1.subject_id = T2.subject_id WHERE T1.charttime < T2.charttime AND T1.hadm_id = T2.hadm_id GROUP BY T2.spec_type_desc ) AS T3 WHERE T3.C1 <= 3",
+    "gold_answer": [["sputum"], ["blood culture"], ["urine"]]
+  },
+  {
+    "task_id": "8",
+    "instruction": "Your goal is to check if patient ID 10020786 was diagnosed with COPD in the year 2100. If diagnosed, request the date of first diagnosis. If not diagnosed, end the conversation.",
+    "gold_sql": "SELECT diagnoses_icd.charttime FROM diagnoses_icd JOIN d_icd_diagnoses ON diagnoses_icd.icd_code = d_icd_diagnoses.icd_code WHERE diagnoses_icd.subject_id = 10020786 AND d_icd_diagnoses.long_title = 'chronic obstructive pulmonary disease, unspecified' AND diagnoses_icd.charttime LIKE '2100%' ORDER BY diagnoses_icd.charttime ASC LIMIT 1;",
+    "gold_answer": [["2100-07-01 12:45:00"]]
+  },
+  {
+    "task_id": "9",
+    "instruction": "Your goal is to check whether a specific surgery was performed on a patient. You are interested in patient ID 10014729 and want to know if they underwent a resection. If there is a record of a resection, request all of their surgery times. If no such record exists, end the conversation.",
+    "gold_sql": "SELECT procedures_icd.charttime FROM procedures_icd WHERE procedures_icd.icd_code IN ( SELECT d_icd_procedures.icd_code FROM d_icd_procedures WHERE d_icd_procedures.long_title LIKE '%resection%' ) AND procedures_icd.hadm_id IN ( SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 10014729 );",
+    "gold_answer": [["2100-03-12 14:25:00"]]
+  }
+]

@@ -1,0 +1,42 @@
+[
+    {
+        "task_id": "0",
+        "instruction": "Your goal is to find the gender of a patient. Specifically, you want to know the gender of the patient with ID 10027602."
+    },
+    {
+        "task_id": "1",
+        "instruction": "Your goal is to find all the routes of administration for isosorbide dinitrate for patients in the database."
+    },
+    {
+        "task_id": "2",
+        "instruction": "Your goal is to find the time when two medications were prescribed simultaneously during the most recent hospital visit for a patient. Specifically, you want to know the time when medications containing olanzapine and quetiapine were prescribed together for patient ID 10004422. If there are multiple occassions where both medications were prescribed simultaneously, you want to know the earliest time."
+    },
+    {
+        "task_id": "3",
+        "instruction": "Your goal is to track the daily minimum Hb levels for the patient with ID 10003400. Specifically, you want to group the results by date to observe how the minimum Hb levels change each day."
+    },
+    {
+        "task_id": "4",
+        "instruction": "Your goal is to find when a specific medication was last prescribed to a patient. You are interested in patient ID 10000032 and want to know the lastest time a medication administered via inhalation was given during their last hospital visit."
+    },
+    {
+        "task_id": "5",
+        "instruction": "Your goal is to find the most frequently performed microbiological tests on patients who underwent a specific procedure this year. The name of the procedure is percutaneous abdominal drainage (PAD). You want to know the top 3 microbiological tests that were conducted within the same month as that procedure. If there is more than one result with the same rank among the top three, ask to retrieve them all."
+    },
+    {
+        "task_id": "6",
+        "instruction": "Your goal is to know the length of a patient's hospital stay in days. You are interested in patient ID 10016742 and knowing how days spent in the hospital from admission to discharge. If this patient has multiple hospital admission records, you want to know the lastest admission."
+    },
+    {
+        "task_id": "7",
+        "instruction": "Your goal is to identify the top 3 most frequently collected specimen types from patients who received CVC placement. You want both the CVC placement procedure and specimen collection occur during the same hospital admission. If multiple specimen types are tied for the same rank within the top three ranks, retrieve all tied results."
+    },
+    {
+        "task_id": "8",
+        "instruction": "Your goal is to check if patient ID 10020786 was diagnosed with COPD in the year 2100. If diagnosed, request the date of first diagnosis. If not diagnosed, end the conversation."
+    },
+    {
+        "task_id": "9",
+        "instruction": "Your goal is to check whether a specific surgery was performed on a patient. You are interested in patient ID 10014729 and want to know if they underwent a resection. If there is a record of a resection, request all of their surgery times. If no such record exists, end the conversation."
+    }
+]

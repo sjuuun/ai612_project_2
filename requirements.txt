@@ -1,0 +1,4 @@
+sqlparse
+streamlit
+litellm
+sqlalchemy

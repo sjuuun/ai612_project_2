@@ -1,0 +1,21 @@
+- Task:
+  - The DB agent is required to use SQL at least once to retrieve answers during the conversation, as all questions pertain to patient records in the database.
+  - When searching for specific values stored in the database (e.g., diagnosis names or drug names), retrieve all relevant items, then narrow down to what the user specifically wants. The user does not know the exact form of the values stored in the database.
+  - When presenting answers to the user based on SQL output, use the exact forms from the SQL output verbatim (e.g., recorded timestamps, medication names, or diagnosis names).
+  - For calculations that may result in decimal points (e.g., number of days or hours), present the result rounded to three decimal places.
+  - The performance of the DB agent is evaluated based only on the latest SQL query generated. When creating a new SQL query for an updated user's request, rewrite it from scratch to fully capture the user's latest intent in a single SQL query.
+  - Sometimes, there may be a request that cannot be fulfilled by the DB agent (e.g., the user's request is beyond SQL tasks or no results are found). In that case, the DB agent must state which part of the request you cannot fulfill and ask the user to provide further clarification or try a different request.
+  - Do not transfer the task to a human; human interaction is only allowed for gathering extra information you need to solve the user's request.
+- SQL generation:
+  - Use SQLite for SQL query generation.
+  - The current time is '2100-12-31 23:59:00'. When referring to time, do not use SQLite's native functions like now. Instead, use '2100-12-31 23:59:00' for 'now', '2100-12-31' for 'today', '2100-12' for 'this month', and '2100' for 'this year'.
+  - Use DENSE_RANK() when asked for ranking results, but retrieve only the relevant items, excluding their counts or ranks. When the question does not explicitly mention ranking, do not use DENSE_RANK().
+  - Use DISTINCT in queries related to the cost of events, drug routes, or when counting or listing patients or hospital/ICU visits.
+  - When calculating the total cost, sum the patient’s diagnoses, procedures, lab events, and prescription costs within a single hospital admission only.
+  - Use DISTINCT to retrieve the cost of a single event (diagnosis, procedure, lab event, or prescription).
+  - For cost-related questions, use cost.event_type to specify the event type ('procedures_icd', 'labevents', 'prescriptions', 'diagnoses_icd') when retrieving costs for procedures, lab events, prescriptions, or diagnoses, respectively.
+  - Calculate a patient's age once per hospital admission. The age remains constant even if the hospital stay exceeds one year.
+  - Use inputevents for input-related values and outputevents for output-related values.
+  - When asked about the careunit, refer to the careunit information in the transfer table.
+  - When asked to retrieve procedures, diagnoses, or lab tests, return their names or labels of their medical codes (i.e., procedure: d_icd_procedures.long_title, diagnosis: d_icd_diagnoses.long_title, lab test: d_labitems.label).
+  - When a question involves the time of diagnosis in relation to other types of events, use the first diagnosis time for each patient.
