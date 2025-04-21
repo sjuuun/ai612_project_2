@@ -13,6 +13,7 @@ We use the [MIMIC-IV database demo](https://physionet.org/content/mimic-iv-demo/
 ## Tutorials
 Check out the jupyter notebook file [`tutorial.ipynb`](tutorial.ipynb). It includes an implementation of a baseline tool-calling DB Agent and how to run inference for submission. The score for the baseline agent on the provided validation set is 40 and costs about $0.20.
 
+[Colab version](https://colab.research.google.com/drive/1c13m05YGLrP_B-vRDapybW0ZagsAhnZ0?usp=sharing) is also available.
 
 ## Dependencies
 The codes were tested in Colab and in a local environment (Python 3.11) with the dependecies listed in `requirements.txt`.
@@ -27,7 +28,7 @@ pip install -r requirements.txt
 ### How to run
 ```bash
 sh run_mimic_iv.sh # running inference
-streamlit run visualizer.py --server.port 8505 # visualizing conversations
+streamlit run visualizer.py --server.port 8505 # visualizing conversations in your localhost.
 ```
 
 ## Tau-bench
