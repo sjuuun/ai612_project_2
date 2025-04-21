@@ -30,5 +30,5 @@ sh run_mimic_iv.sh # running inference
 streamlit run visualizer.py --server.port 8505 # visualizing conversations
 ```
 
-### Tau-bench
+## Tau-bench
 This code repository is based on the [tau-bench github repository](https://github.com/sierra-research/tau-bench.git).
