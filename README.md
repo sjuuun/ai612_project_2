@@ -5,26 +5,17 @@ The goal of this project is to implement a conversational text-to-SQL agent (DB 
 Furthermore, it is guaranteed that all questions asked by the User LLM are answerable. As a result, for each conversation initiated by the User LLM, your DB Agent should generate a correct SQL query. Additionally, note that values mentioned in natural language questions may use different phrasing compared to their representation in the database (e.g., "Hb" vs. "hemoglobin"). Addressing this requires the DB Agent to leverage appropriate tools to explore the database and identify the correct database entities or values corresponding to the user's input.
 
 
-Check [Project 2 Specs](https://docs.google.com/document/d/1CghIWzaSvuqgQVzCVLAUOOPiBED-zXogUdm0Bzvk-Cs/edit?usp=sharing) for more details.
+Check [Project 2 Specs](https://docs.google.com/document/d/18SVb7a7R0UedJabTadoqJrc1O_-29a_zEEX1AAZ0R2s/edit?usp=sharing) for more details.
 
 ## Database
 We use the [MIMIC-IV database demo](https://physionet.org/content/mimic-iv-demo/2.2/), which anyone can access the files as long as they conform to the terms of the [Open Data Commons Open Database License v1.0](https://physionet.org/content/mimic-iv-demo/view-license/2.2/).
 
 ## Tutorials
-Check out the jupyter notebook files in the [`example_baselines/`](example_baselines/).
-
-Especially, the [`gpt_4o_mini.ipynb`](example_baselines/gpt_4o_mini.ipynb) would be a good starting point to your implementation.
-
-Colab version of the baselines are also available:
-- [`dummy.ipynb`](https://colab.research.google.com/drive/1dkgNR3Qi5ZrtzX_QJbQNhXLpyKHxgq-h?usp=sharing)
-- [`gpt_4o_mini.ipynb`](https://colab.research.google.com/drive/1IQIOHrl-4sgorbtFZFVP2NnUP_7XdjmZ?usp=sharing)
+Check out the jupyter notebook file [`tutorial.ipynb`](tutorial.ipynb). It includes an implementation of a baseline tool-calling DB Agent and how to run inference for submission. The score for the baseline agent on the provided validation set is 40 and costs about $0.20.
 
 
 ## Dependencies
 The codes were tested in Colab and in a local environment (Python 3.11) with the dependecies listed in `requirements.txt`.
-
-### Colab
-Install func_timeout using `pip install func-timeout`
 
 ### Local
 ```bash
@@ -32,3 +23,12 @@ conda create -n ai612-project2 python=3.11 -y
 conda activate ai612-project2
 pip install -r requirements.txt
 ```
+
+### How to run
+```bash
+sh run_mimic_iv.sh # running inference
+streamlit run visualizer.py --server.port 8505 # visualizing conversations
+```
+
+### Tau-bench
+This code repository is based on the [tau-bench github repository](https://github.com/sierra-research/tau-bench.git).
