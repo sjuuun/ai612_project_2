@@ -34,7 +34,7 @@ def parse_arguments() -> Namespace:
     parser.add_argument("--start_index", type=int, required=False, default=0, help="Start index for tasks")
     parser.add_argument("--end_index", type=int, required=False, default=-1, help="End index for tasks (-1 for all)")
     parser.add_argument("--task_ids", nargs='+', type=int, required=False, default=None, help="Specific task ids to run")
-    parser.add_argument("--simulation_retry", type=int, required=False, default=3, help="Number of simulation retries")    
+    parser.add_argument("--simulation_retry", type=int, required=False, default=10, help="Number of simulation retries")    
     return parser.parse_args()
 
 def display_metrics(results: List[EnvRunResult]) -> None:
