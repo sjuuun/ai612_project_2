@@ -78,8 +78,8 @@ def run(config: Namespace):
 
     timestamp = datetime.now().strftime("%m%d%H%M%S")
     checkpoint_filename = (
-        f"{config.env}-{config.agent_strategy}-{os.path.basename(config.model)}-{config.temperature}_"
-        f"range_{config.start_index}-{config.end_index}_user-{config.user_model}-{config.user_strategy}_{timestamp}_{config.eval_mode}.json"
+        f"{config.env}-{config.agent_strategy}-{os.path.basename(config.model.replace('gemini/', ''))}-{config.temperature}_"
+        f"range_{config.start_index}-{config.end_index}_user-{config.user_model.replace('gemini/', '')}-{config.user_strategy}_{timestamp}_{config.eval_mode}.json"
     )
     ckpt_path = os.path.join(config.result_dir, checkpoint_filename)
     if not os.path.exists(config.result_dir):
