@@ -10,7 +10,7 @@ from src.types import Task
 
 
 load_dotenv()
-MODEL = "gemini/gemini-2.0-flash"
+MODEL = "gpt-4o-mini"
 
 role_prompt = '''Your task is to identify which entity was responsible for the initial mistake that led to the failure of EHR database question answering.
 - The conversation below is between a user and a database agent.
