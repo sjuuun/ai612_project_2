@@ -7,6 +7,7 @@ from src.envs.mimic_iv.tools.sql_db_schema import SqlDbSchema
 from src.envs.mimic_iv.tools.sql_db_query import SqlDbQuery
 from src.envs.mimic_iv.tools.value_substring_search import ValueSubstringSearch
 # TODO: import your own tools here
+from src.envs.mimic_iv.tools.instruction_sql_search import InstructionSQLSearch
 from sqlalchemy import create_engine
 
 FOLDER_PATH = os.path.dirname(__file__)
@@ -30,6 +31,7 @@ class MimicIVEnv(Env):
         sql_db_schema = SqlDbSchema(engine=engine)
         sql_db_query = SqlDbQuery(engine=engine)
         value_substring_search = ValueSubstringSearch(engine=engine)
+        instruction_sql_search = InstructionSQLSearch()
 
         super().__init__(
             tools=[
@@ -38,6 +40,7 @@ class MimicIVEnv(Env):
                 value_substring_search,
                 sql_db_query,
                 # TODO: add your own tools here
+                instruction_sql_search,
             ],
             tasks=tasks,
             user_strategy=user_strategy,
