@@ -1,9 +1,9 @@
+import random
 import time
 from collections import Counter
 from typing import Any, Dict, List, Optional
 
 from litellm import completion
-from typing import List, Optional, Dict, Any
 
 from src.agents.base import Agent
 from src.envs.base import Env
@@ -209,13 +209,52 @@ class ToolCallingAgent(Agent):
         self.temperature = temperature
         self.instruction = TOOL_CALLING_INSTRUCTION + '\nRules:\n'+self.rule
 
+    def get_sampled_observation(self,obs_list):
+        """
+        주어진 리스트에서 특정 조건에 따라 관측값을 샘플링합니다.
+        - count가 2 이상인 원소가 있으면: 그 중 가장 빈도가 낮은 것을 선택
+        - 모든 원소의 count가 1이면: 리스트에서 무작위로 하나를 선택
+        """
+        # 1. 리스트가 비어있으면 None을 반환하여 에러를 방지합니다.
+        if not obs_list:
+            return None, 0
+
+        # 2. 각 원소의 개수를 세고, 빈도수 순으로 정렬합니다.
+        all_counts = Counter(obs_list).most_common()
+
+        # 3. 개수가 2 이상인 원소들만 후보(candidates)로 필터링합니다.
+        candidates = [(obs, count) for obs, count in all_counts if count >= 2]
+
+        # 4. 조건에 따라 샘플링 방식을 결정합니다.
+        if candidates:
+            # 조건에 맞는 경우: 후보 리스트의 맨 마지막 항목(가장 빈도가 낮은 것)을 선택합니다.
+            sampled_obs, count = candidates[0]
+        else:
+            sampled_obs = random.choice(obs_list)
+            count = 1  
+
+        return sampled_obs, count
+
     def run(
-        self, env: Env, task_index: Optional[int] = None, max_num_steps: int = 30
+        self, env: Env, task_index: Optional[int] = None, max_num_steps: int = 30, user_samples: int = 10
     ) -> AgentRunResult:
         agent_cost = 0.0
         env_reset_res = env.reset(task_index=task_index)
         obs_user = env_reset_res.observation
         env_info = env_reset_res.info.model_dump()
+        
+        sampled_obs = []
+        sampled_env = []
+        for _ in range(user_samples):
+            env_reset_res = env.reset(task_index=task_index)
+            sampled_obs.append(env_reset_res.observation)
+            sampled_env.append(env_reset_res)
+
+        most_common_obs, _count = self.get_sampled_observation(sampled_obs)
+        index_of_most_common = sampled_obs.index(most_common_obs)
+        env_reset_res = sampled_env[index_of_most_common]
+        env_info = env_reset_res.info.model_dump()
+        
         reward = 0.0
         messages: List[Dict[str, Any]] = [
             {"role": "system", "content": self.instruction},
